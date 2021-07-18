@@ -1,0 +1,161 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  JotformApiKey:
+    Type: String
+    Default: Missing Jotform Key
+
+Resources:
+  LambdaBasicAccessRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        -
+          PolicyName: "LambdaBasicAccessRolePolicy"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              Resource: "*"
+  GetSchedule:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: GetSchedule
+      Code: ./
+      Handler: "getScheduleLambdaHandler.handler"
+      Runtime: "nodejs12.x"
+      Role: !GetAtt LambdaBasicAccessRole.Arn
+      Timeout: 60
+      Environment:
+        Variables:
+          JOTFORM_API_KEY:
+            Ref: JotformApiKey
+  BitterJesterApiSchedule:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      ApiKeySourceType: HEADER
+      Description: Schedule API for Bitter Jester Data Manager
+      Name: bitter-jester-api-schedule
+  CompetitionIdPathResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt BitterJesterApiSchedule.RootResourceId
+      PathPart: '{competitionId}'
+      RestApiId: !Ref BitterJesterApiSchedule
+  GetScheduleResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt BitterJesterApiSchedule.RootResourceId
+      PathPart: 'get-schedule'
+      RestApiId: !Ref BitterJesterApiSchedule
+  ApiGatewayModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      ContentType: 'application/json'
+      RestApiId: !Ref BitterJesterApiSchedule
+      Schema: { }
+  ApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: GetScheduleGatewayMethod
+    Properties:
+      Description: Bitter Jester Data Manager API Deployment
+      RestApiId: !Ref BitterJesterApiSchedule
+  ApiGatewayStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      DeploymentId: !Ref ApiGatewayDeployment
+      Description: Prod API Stage
+      RestApiId: !Ref BitterJesterApiSchedule
+      StageName: prod
+  ApiGatewayIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: 'Allow'
+            Principal:
+              Service:
+                - 'apigateway.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/'
+  ApiGatewayPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: "LambdaAccess"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: 'Allow'
+            Action: 'lambda:*'
+            Resource: !GetAtt GetSchedule.Arn
+      Roles:
+        - !Ref ApiGatewayIamRole
+  LambdaApiGatewayInvoke:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt "GetSchedule.Arn"
+      Principal: "apigateway.amazonaws.com"
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BitterJesterApiSchedule}/*/*
+  GetScheduleGatewayMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: GET
+      RequestParameters:
+        method.request.path.competitionId: true
+      Integration:
+        Credentials: !GetAtt ApiGatewayIamRole.Arn
+        IntegrationHttpMethod: POST
+        IntegrationResponses:
+          - ResponseTemplates: { "application/json": "" }
+            ResponseParameters:
+              method.response.header.X-Requested-With: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            StatusCode: 200
+        PassthroughBehavior: WHEN_NO_TEMPLATES
+        RequestTemplates:
+          application/json: "{ \"competitionId\": \"$input.params('competitionId')\"}"
+        TimeoutInMillis: 29000
+        Type: AWS
+        Uri: !Sub
+          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
+          - lambdaArn: !GetAtt "GetSchedule.Arn"
+      MethodResponses:
+        - ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.X-Requested-With: false
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: false
+          StatusCode: 200
+      OperationName: 'Get Competitions'
+      ResourceId: !Ref GetScheduleResource
+      RestApiId: !Ref BitterJesterApiSchedule
+Outputs:
+  MainEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for Update Schedule Function"
+    Value: !Sub "https://${BitterJesterApiSchedule}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStage}/{competitionId}"
+  GetScheduleEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for Completed Submissions Function"
+    Value: !Sub "https://${BitterJesterApiSchedule}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStage}/{competitionId}/get-schedule"
