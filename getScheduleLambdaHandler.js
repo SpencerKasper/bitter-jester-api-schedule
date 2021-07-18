@@ -1,6 +1,7 @@
 require('dotenv').config();
 const generateFridayNightBattleSchedule = require('./generateFridayNightBattleSchedule/generateFridayNightBattleSchedule');
 const S3Client = require('s3Client').S3Client;
+const BITTER_JESTER_COMPLETED_APPLICATIONS_JOTFORM_FORM_ID = 211443460736149;
 
 const s3Client = new S3Client();
 const s3Bucket = 'bitter-jester-test';
@@ -26,8 +27,21 @@ exports.handler = async function (event, context) {
             await s3Client.put(s3PutRequest);
             return {responseCode: 200, body: schedule};
         }
-        const lastSavedSchedule = await s3Client.getObject(s3Bucket, `${competition}/${LAST_SAVED_SCHEDULE_TYPE}.json`);
-        return {responseCode: 200, body: lastSavedSchedule};
+        const submissions = await writeToS3FromJotForm.getFormSubmissions(
+            BITTER_JESTER_COMPLETED_APPLICATIONS_JOTFORM_FORM_ID,
+            `${competition}/completed-submissions.json`,
+            formatForS3.format,
+            s3Client
+        );
+        const schedule = await s3Client
+            .getObject('bitter-jester-test', `${competition}/user-friday-night-schedule.json`);
+        console.error(schedule);
+        const updatedNights = [];
+        for(let night of schedule.nights){
+            const updatedBandsForNight = night.bands.map(band => submissions.completedApplications.find(sub => sub.bandName === band.bandName));
+            updatedNights.push({...night, bands: updatedBandsForNight});
+        }
+        return {responseCode: 200, body: {...schedule, nights: updatedNights}};
     } catch (e) {
         return e;
     }

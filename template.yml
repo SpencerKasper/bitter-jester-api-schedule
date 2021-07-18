@@ -122,6 +122,7 @@ Resources:
       HttpMethod: GET
       RequestParameters:
         method.request.path.competitionId: true
+        method.request.querystring.lastSaved: false
       Integration:
         Credentials: !GetAtt ApiGatewayIamRole.Arn
         IntegrationHttpMethod: POST
