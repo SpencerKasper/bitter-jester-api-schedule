@@ -1,5 +1,7 @@
 require('dotenv').config();
 const generateFridayNightBattleSchedule = require('./generateFridayNightBattleSchedule/generateFridayNightBattleSchedule');
+const writeToS3FromJotForm = require("./writeToS3FromJotForm/writeToS3FromJotForm");
+const formatCompletedApplications = require('./jotform-formatters/formatCompletedApplications');
 const S3Client = require('s3Client').S3Client;
 const BITTER_JESTER_COMPLETED_APPLICATIONS_JOTFORM_FORM_ID = 211443460736149;
 
@@ -30,7 +32,7 @@ exports.handler = async function (event, context) {
         const submissions = await writeToS3FromJotForm.getFormSubmissions(
             BITTER_JESTER_COMPLETED_APPLICATIONS_JOTFORM_FORM_ID,
             `${competition}/completed-submissions.json`,
-            formatForS3.format,
+            formatCompletedApplications.format,
             s3Client
         );
         const schedule = await s3Client
