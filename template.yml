@@ -58,7 +58,8 @@ Resources:
   GetScheduleResource:
     Type: AWS::ApiGateway::Resource
     Properties:
-      ParentId: !GetAtt BitterJesterApiSchedule.RootResourceId
+      ParentId:
+        Ref: CompetitionIdPathResource
       PathPart: 'get-schedule'
       RestApiId: !Ref BitterJesterApiSchedule
   ApiGatewayModel:
