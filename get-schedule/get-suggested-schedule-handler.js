@@ -1,6 +1,5 @@
-const S3_BUCKET = require("./getScheduleLambdaHandler").S3_BUCKET;
-
-const {generateFridayNightBattleSchedule} = require("./generateFridayNightBattleSchedule/generateFridayNightBattleSchedule");
+const S3_BUCKET = 'bitter-jester-test';
+const generateFridayNightBattleSchedule = require("./generateFridayNightBattleSchedule/generateFridayNightBattleSchedule");
 
 class GetSuggestedScheduleHandler {
     constructor(s3Client, competition, orderedShowcaseBands){
@@ -25,5 +24,5 @@ class GetSuggestedScheduleHandler {
 }
 
 module.exports = {
-    GetSuggestedScheduleHandler
+    GetSuggestedScheduleHandler: GetSuggestedScheduleHandler
 }
