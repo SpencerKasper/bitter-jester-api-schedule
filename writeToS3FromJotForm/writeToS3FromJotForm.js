@@ -15,9 +15,11 @@ async function getFormSubmissions(formId, filename, formatFunction, s3Client = n
     const queryParams = {
         limit: 1000
     }
+    console.error('Calling jotform...');
     const response = await jotform.getFormSubmissions(formId, queryParams);
+    console.error('Response from jotform received.');
     const formattedResponse = await formatFunction(response, formId);
-    console.error(formattedResponse);
+    console.error('Formatted: ', formattedResponse);
     const s3PutRequest = s3Client.createPutPublicJsonRequest(
         s3Bucket,
         filename,

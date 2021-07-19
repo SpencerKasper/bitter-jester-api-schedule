@@ -16,17 +16,17 @@ const LAST_SAVED_SCHEDULE_TYPE = 'user-friday-night-schedule';
 const handler = async function (event, context) {
     try {
         const parsedMessage = new GetScheduleMessageParser(event).get();
-        console.error(`Processing competition w/ params: ${parsedMessage}`);
+        console.error(`Processing competition w/ params: ${JSON.stringify(parsedMessage)}`);
         const {scheduleType, competition, orderedShowcaseBands} = parsedMessage;
         if(scheduleType === SUGGESTED_SCHEDULE_TYPE){
             console.error('Getting suggested schedule...');
             const suggestedSchedule = await new GetSuggestedScheduleHandler(s3Client, competition, orderedShowcaseBands).get();
-            console.error(`Output: ${suggestedSchedule}`);
+            console.error(`Output: ${JSON.stringify(suggestedSchedule)}`);
             return {responseCode: 200, body: suggestedSchedule};
         }
         console.error('Getting saved schedule...');
         const savedSchedule = await new GetSavedScheduleHandler(s3Client, competition).get();
-        console.error(`Output: ${savedSchedule}`);
+        console.error(`Output: ${JSON.stringify(savedSchedule)}`);
         return {responseCode: 200, body: savedSchedule};
     } catch (e) {
         return e;
