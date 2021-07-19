@@ -1,8 +1,8 @@
 require('dotenv').config();
 
-const {GetScheduleMessageParser} = require("./get-schedule-message-parser");
-const {GetSuggestedScheduleHandler} = require("./get-suggested-schedule-handler");
-const {GetSavedScheduleHandler} = require("./get-saved-schedule-handler");
+const GetScheduleMessageParser = require("./get-schedule-message-parser").GetScheduleMessageParser;
+const GetSuggestedScheduleHandler = require("./get-suggested-schedule-handler").GetSuggestedScheduleHandler;
+const GetSavedScheduleHandler = require("./get-saved-schedule-handler").GetSavedScheduleHandler;
 
 const S3Client = require('s3Client').S3Client;
 const BITTER_JESTER_COMPLETED_APPLICATIONS_JOTFORM_FORM_ID = 211443460736149;

@@ -1,4 +1,5 @@
-const {SUGGESTED_SCHEDULE_TYPE, LAST_SAVED_SCHEDULE_TYPE} = require("./getScheduleLambdaHandler");
+const LAST_SAVED_SCHEDULE_TYPE = require("./getScheduleLambdaHandler").LAST_SAVED_SCHEDULE_TYPE;
+const SUGGESTED_SCHEDULE_TYPE = require("./getScheduleLambdaHandler").SUGGESTED_SCHEDULE_TYPE;
 
 class GetScheduleMessageParser {
     constructor(event){

@@ -1,6 +1,6 @@
 const formatCompletedApplications = require("../jotform-formatters/formatCompletedApplications");
 const writeToS3FromJotForm =  require("../writeToS3FromJotForm/writeToS3FromJotForm");
-const {BITTER_JESTER_COMPLETED_APPLICATIONS_JOTFORM_FORM_ID} = require("./getScheduleLambdaHandler");
+const BITTER_JESTER_COMPLETED_APPLICATIONS_JOTFORM_FORM_ID = require("./getScheduleLambdaHandler").BITTER_JESTER_COMPLETED_APPLICATIONS_JOTFORM_FORM_ID;
 
 class GetSavedScheduleHandler {
     constructor(s3Client, competition){

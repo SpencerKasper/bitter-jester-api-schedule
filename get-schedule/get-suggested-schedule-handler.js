@@ -1,4 +1,4 @@
-const {S3_BUCKET} = require("./getScheduleLambdaHandler");
+const S3_BUCKET = require("./getScheduleLambdaHandler").S3_BUCKET;
 
 const {generateFridayNightBattleSchedule} = require("./generateFridayNightBattleSchedule/generateFridayNightBattleSchedule");
 
