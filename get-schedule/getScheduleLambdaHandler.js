@@ -16,12 +16,16 @@ const LAST_SAVED_SCHEDULE_TYPE = 'user-friday-night-schedule';
 const handler = async function (event, context) {
     try {
         const {competition, orderedShowcaseBands, scheduleType} = new GetScheduleMessageParser(event).get();
+        console.error(`Processing competition: ${competition}`);
         if(scheduleType === SUGGESTED_SCHEDULE_TYPE){
+            console.error('Getting suggested schedule...');
             const suggestedSchedule = await new GetSuggestedScheduleHandler(s3Client, competition, orderedShowcaseBands).get();
+            console.error(`Output: ${suggestedSchedule}`);
             return {responseCode: 200, body: suggestedSchedule};
         }
-
+        console.error('Getting saved schedule...');
         const savedSchedule = await new GetSavedScheduleHandler(s3Client, competition).get();
+        console.error(`Output: ${savedSchedule}`);
         return {responseCode: 200, body: savedSchedule};
     } catch (e) {
         return e;
