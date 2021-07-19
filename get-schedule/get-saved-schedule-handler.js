@@ -2,7 +2,7 @@ const formatCompletedApplications = require("../jotform-formatters/formatComplet
 const writeToS3FromJotForm =  require("../writeToS3FromJotForm/writeToS3FromJotForm");
 const {BITTER_JESTER_COMPLETED_APPLICATIONS_JOTFORM_FORM_ID} = require("./getScheduleLambdaHandler");
 
-export class GetSavedScheduleHandler {
+exports.GetSavedScheduleHandler = class GetSavedScheduleHandler {
     constructor(s3Client, competition){
         this.s3Client = s3Client;
         this.competition = competition;

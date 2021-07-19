@@ -2,7 +2,7 @@ const {S3_BUCKET} = require("./getScheduleLambdaHandler");
 
 const {generateFridayNightBattleSchedule} = require("./generateFridayNightBattleSchedule/generateFridayNightBattleSchedule");
 
-export class GetSuggestedScheduleHandler {
+exports.GetSuggestedScheduleHandler = class GetSuggestedScheduleHandler {
     constructor(s3Client, competition, orderedShowcaseBands){
         this.s3Client = s3Client;
         this.competition = competition;
@@ -23,3 +23,4 @@ export class GetSuggestedScheduleHandler {
         return schedule;
     }
 }
+
