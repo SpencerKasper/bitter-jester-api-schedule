@@ -15,8 +15,9 @@ const LAST_SAVED_SCHEDULE_TYPE = 'user-friday-night-schedule';
 
 const handler = async function (event, context) {
     try {
-        const {competition, orderedShowcaseBands, scheduleType} = new GetScheduleMessageParser(event).get();
-        console.error(`Processing competition: ${competition}`);
+        const parsedMessage = new GetScheduleMessageParser(event).get();
+        console.error(`Processing competition w/ params: ${parsedMessage}`);
+        const {scheduleType, competition, orderedShowcaseBands} = parsedMessage;
         if(scheduleType === SUGGESTED_SCHEDULE_TYPE){
             console.error('Getting suggested schedule...');
             const suggestedSchedule = await new GetSuggestedScheduleHandler(s3Client, competition, orderedShowcaseBands).get();

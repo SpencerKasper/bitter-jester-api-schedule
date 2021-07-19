@@ -8,8 +8,11 @@ class GetScheduleMessageParser {
     }
 
     get() {
-        const {competition, scheduleType, orderedShowcaseBands} = this;
-        return {competition, scheduleType, orderedShowcaseBands};
+        return {
+            competition: this.competition,
+            scheduleType: this.scheduleType,
+            orderedShowcaseBands: this.orderedShowcaseBands,
+        };
     }
 }
 
