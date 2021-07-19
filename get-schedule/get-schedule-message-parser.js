@@ -1,6 +1,6 @@
 const {SUGGESTED_SCHEDULE_TYPE, LAST_SAVED_SCHEDULE_TYPE} = require("./getScheduleLambdaHandler");
 
-exports.GetScheduleMessageParser =  class GetScheduleMessageParser {
+class GetScheduleMessageParser {
     constructor(event){
         this.competition = event.competitionId ? `competition=${event.competitionId}` : event.Records[0].Sns.Message;
         this.scheduleType = event.lastSaved ? LAST_SAVED_SCHEDULE_TYPE : SUGGESTED_SCHEDULE_TYPE;
@@ -11,4 +11,8 @@ exports.GetScheduleMessageParser =  class GetScheduleMessageParser {
         const {competition, scheduleType, orderedShowcaseBands} = this;
         return {competition, scheduleType, orderedShowcaseBands};
     }
+}
+
+module.exports = {
+    GetScheduleMessageParser
 }
