@@ -9,10 +9,12 @@ class GetSuggestedScheduleHandler {
     }
 
     async get(){
+        console.error('Getting');
         const item = await this.s3Client.getObject(S3_BUCKET, `${this.competition}/completed-submissions.json`);
         const removedBands = await this.s3Client.getObject(S3_BUCKET, `${this.competition}/removed-bands.json`);
         const applications = item.completedApplications.filter(app => !removedBands.removedBands.includes(app.bandName));
-        const schedule = await generateFridayNightBattleSchedule(applications, this.orderedShowcaseBands);
+        console.error('generate');
+        const schedule = await generateFridayNightBattleSchedule.generateFridayNightBattleSchedule(applications, this.orderedShowcaseBands);
         const s3PutRequest = this.s3Client.createPutPublicJsonRequest(
             S3_BUCKET,
             `${this.competition}/friday-night-schedule.json`,

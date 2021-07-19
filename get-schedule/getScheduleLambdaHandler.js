@@ -16,12 +16,14 @@ exports.handler = async function (event, context) {
         const {scheduleType, competition, orderedShowcaseBands} = parsedMessage;
         if(scheduleType === SUGGESTED_SCHEDULE_TYPE){
             console.error('Getting suggested schedule...');
-            const suggestedSchedule = await new GetSuggestedScheduleHandler(s3Client, competition, orderedShowcaseBands).get();
+            const getSuggestedScheduleHandler = new GetSuggestedScheduleHandler(s3Client, competition, orderedShowcaseBands);
+            const suggestedSchedule = await getSuggestedScheduleHandler.get();
             console.error(`Output: ${JSON.stringify(suggestedSchedule)}`);
             return {responseCode: 200, body: suggestedSchedule};
         }
         console.error('Getting saved schedule...');
-        const savedSchedule = await new GetSavedScheduleHandler(s3Client, competition).get();
+        const getSavedScheduleHandler = new GetSavedScheduleHandler(s3Client, competition);
+        const savedSchedule = await getSavedScheduleHandler.get();
         console.error(`Output: ${JSON.stringify(savedSchedule)}`);
         return {responseCode: 200, body: savedSchedule};
     } catch (e) {
