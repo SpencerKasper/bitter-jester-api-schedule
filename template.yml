@@ -35,7 +35,7 @@ Resources:
     Properties:
       FunctionName: GetSchedule
       Code: ./
-      Handler: "getScheduleLambdaHandler.handler"
+      Handler: "get-schedule/getScheduleLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !GetAtt LambdaBasicAccessRole.Arn
       Timeout: 60
