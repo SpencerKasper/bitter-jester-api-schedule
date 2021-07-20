@@ -1,9 +1,10 @@
+const CompetitionMessageParser = require('shared-message-parsers/competition-message-parser').CompetitionMessageParser;
 const SUGGESTED_SCHEDULE_TYPE = 'friday-night-schedule';
 const LAST_SAVED_SCHEDULE_TYPE = 'user-friday-night-schedule';
 
-class GetScheduleMessageParser {
+class GetScheduleMessageParser extends CompetitionMessageParser {
     constructor(event){
-        this.competition = event.competitionId ? `competition=${event.competitionId}` : event.Records[0].Sns.Message;
+        super(event);
         console.error(LAST_SAVED_SCHEDULE_TYPE);
         console.error(SUGGESTED_SCHEDULE_TYPE);
         this.scheduleType = event.lastSaved ? LAST_SAVED_SCHEDULE_TYPE : SUGGESTED_SCHEDULE_TYPE;
@@ -12,10 +13,18 @@ class GetScheduleMessageParser {
 
     get() {
         return {
-            competition: this.competition,
+            competition: this.getCompetition(),
             scheduleType: this.scheduleType,
             orderedShowcaseBands: this.orderedShowcaseBands,
         };
+    }
+
+    getScheduleType() {
+        return this.scheduleType;
+    }
+
+    getOrderedShowcaseBands() {
+        return this.orderedShowcaseBands;
     }
 }
 

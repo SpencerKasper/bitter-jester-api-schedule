@@ -43,6 +43,19 @@ Resources:
         Variables:
           JOTFORM_API_KEY:
             Ref: JotformApiKey
+  GetRemovedBands:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: GetSchedule
+      Code: ./
+      Handler: "get-removed-bands/getRemovedBandsLambdaHandler.handler"
+      Runtime: "nodejs12.x"
+      Role: !GetAtt LambdaBasicAccessRole.Arn
+      Timeout: 60
+      Environment:
+        Variables:
+          JOTFORM_API_KEY:
+            Ref: JotformApiKey
   BitterJesterApiSchedule:
     Type: AWS::ApiGateway::RestApi
     Properties:
@@ -61,6 +74,13 @@ Resources:
       ParentId:
         Ref: CompetitionIdPathResource
       PathPart: 'get-schedule'
+      RestApiId: !Ref BitterJesterApiSchedule
+  GetRemovedBandsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: CompetitionIdPathResource
+      PathPart: 'get-removed-bands'
       RestApiId: !Ref BitterJesterApiSchedule
   ApiGatewayModel:
     Type: AWS::ApiGateway::Model
@@ -105,6 +125,9 @@ Resources:
           - Effect: 'Allow'
             Action: 'lambda:*'
             Resource: !GetAtt GetSchedule.Arn
+          - Effect: 'Allow'
+            Action: 'lambda:*'
+            Resource: !GetAtt GetRemovedBands.Arn
       Roles:
         - !Ref ApiGatewayIamRole
   LambdaApiGatewayInvoke:
@@ -112,6 +135,13 @@ Resources:
     Properties:
       Action: "lambda:InvokeFunction"
       FunctionName: !GetAtt "GetSchedule.Arn"
+      Principal: "apigateway.amazonaws.com"
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BitterJesterApiSchedule}/*/*
+  LambdaApiGatewayInvokeGetRemovedBands:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt "GetRemovedBands.Arn"
       Principal: "apigateway.amazonaws.com"
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BitterJesterApiSchedule}/*/*
   GetScheduleGatewayMethod:
@@ -153,6 +183,45 @@ Resources:
           StatusCode: 200
       OperationName: 'Get Competitions'
       ResourceId: !Ref GetScheduleResource
+      RestApiId: !Ref BitterJesterApiSchedule
+  GetRemovedBandsGatewayMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: GET
+      RequestParameters:
+        method.request.path.competitionId: true
+      Integration:
+        Credentials: !GetAtt ApiGatewayIamRole.Arn
+        IntegrationHttpMethod: POST
+        IntegrationResponses:
+          - ResponseTemplates: { "application/json": "" }
+            ResponseParameters:
+              method.response.header.X-Requested-With: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            StatusCode: 200
+        PassthroughBehavior: WHEN_NO_TEMPLATES
+        RequestTemplates:
+          application/json: "{ \"competitionId\": \"$input.params('competitionId')\"}"
+        TimeoutInMillis: 29000
+        Type: AWS
+        Uri: !Sub
+          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
+          - lambdaArn: !GetAtt "GetRemovedBands.Arn"
+      MethodResponses:
+        - ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.X-Requested-With: false
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: false
+          StatusCode: 200
+      OperationName: 'Get Removed Bands'
+      ResourceId: !Ref GetRemovedBandsResource
       RestApiId: !Ref BitterJesterApiSchedule
 Outputs:
   MainEndpoint:
