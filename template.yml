@@ -261,6 +261,7 @@ Resources:
       HttpMethod: POST
       RequestParameters:
         method.request.header.body: true
+        method.request.path.competitionId: true
       Integration:
         Credentials: !GetAtt ApiGatewayIamRole.Arn
         IntegrationHttpMethod: POST
@@ -274,7 +275,7 @@ Resources:
             StatusCode: 200
         PassthroughBehavior: WHEN_NO_TEMPLATES
         RequestTemplates:
-          application/json: "{ \"body\": \"$util.escapeJavaScript($input.json('$'))\"}"
+          application/json: "{ \"competitionId\": \"$input.params('competitionId')\", \"body\": \"$util.escapeJavaScript($input.json('$'))\"}"
         TimeoutInMillis: 29000
         Type: AWS
         Uri: !Sub
