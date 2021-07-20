@@ -56,6 +56,19 @@ Resources:
         Variables:
           JOTFORM_API_KEY:
             Ref: JotformApiKey
+  UpdateRemovedBands:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: UpdateRemovedBands
+      Code: ./
+      Handler: "update-removed-bands/updateRemovedBandsLambdaHandler.handler"
+      Runtime: "nodejs12.x"
+      Role: !GetAtt LambdaBasicAccessRole.Arn
+      Timeout: 60
+      Environment:
+        Variables:
+          JOTFORM_API_KEY:
+            Ref: JotformApiKey
   BitterJesterApiSchedule:
     Type: AWS::ApiGateway::RestApi
     Properties:
@@ -81,6 +94,13 @@ Resources:
       ParentId:
         Ref: CompetitionIdPathResource
       PathPart: 'get-removed-bands'
+      RestApiId: !Ref BitterJesterApiSchedule
+  UpdateRemovedBandsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: CompetitionIdPathResource
+      PathPart: 'update-removed-bands'
       RestApiId: !Ref BitterJesterApiSchedule
   ApiGatewayModel:
     Type: AWS::ApiGateway::Model
@@ -128,6 +148,9 @@ Resources:
           - Effect: 'Allow'
             Action: 'lambda:*'
             Resource: !GetAtt GetRemovedBands.Arn
+          - Effect: 'Allow'
+            Action: 'lambda:*'
+            Resource: !GetAtt UpdateRemovedBands.Arn
       Roles:
         - !Ref ApiGatewayIamRole
   LambdaApiGatewayInvoke:
@@ -142,6 +165,13 @@ Resources:
     Properties:
       Action: "lambda:InvokeFunction"
       FunctionName: !GetAtt "GetRemovedBands.Arn"
+      Principal: "apigateway.amazonaws.com"
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BitterJesterApiSchedule}/*/*
+  LambdaApiGatewayInvokeUpdateRemovedBands:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt "UpdateRemovedBands.Arn"
       Principal: "apigateway.amazonaws.com"
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BitterJesterApiSchedule}/*/*
   GetScheduleGatewayMethod:
@@ -211,6 +241,33 @@ Resources:
         Uri: !Sub
           - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
           - lambdaArn: !GetAtt "GetRemovedBands.Arn"
+  UpdateRemovedBandsGatewayMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: NONE
+      HttpMethod: POST
+      RequestParameters:
+        method.request.header.body: true
+      Integration:
+        Credentials: !GetAtt ApiGatewayIamRole.Arn
+        IntegrationHttpMethod: POST
+        IntegrationResponses:
+          - ResponseTemplates: { "application/json": "" }
+            ResponseParameters:
+              method.response.header.X-Requested-With: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'"
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            StatusCode: 200
+        PassthroughBehavior: WHEN_NO_TEMPLATES
+        RequestTemplates:
+          application/json: "{ \"body\": \"$input.params('body')\"}"
+        TimeoutInMillis: 29000
+        Type: AWS
+        Uri: !Sub
+          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
+          - lambdaArn: !GetAtt "UpdateRemovedBands.Arn"
       MethodResponses:
         - ResponseModels:
             application/json: 'Empty'
@@ -220,8 +277,8 @@ Resources:
             method.response.header.Access-Control-Allow-Methods: false
             method.response.header.Access-Control-Allow-Origin: false
           StatusCode: 200
-      OperationName: 'Get Removed Bands'
-      ResourceId: !Ref GetRemovedBandsResource
+      OperationName: 'Update Removed Bands'
+      ResourceId: !Ref UpdateRemovedBandsResource
       RestApiId: !Ref BitterJesterApiSchedule
 Outputs:
   MainEndpoint:
