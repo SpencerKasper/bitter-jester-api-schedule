@@ -274,7 +274,7 @@ Resources:
             StatusCode: 200
         PassthroughBehavior: WHEN_NO_TEMPLATES
         RequestTemplates:
-          application/json: "{ \"body\": \"$input.body\"}"
+          application/json: "{ \"body\": \"$util.escapeJavaScript($input.json('$'))\"}"
         TimeoutInMillis: 29000
         Type: AWS
         Uri: !Sub
