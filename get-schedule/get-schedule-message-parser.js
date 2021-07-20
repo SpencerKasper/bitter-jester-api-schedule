@@ -5,8 +5,6 @@ const LAST_SAVED_SCHEDULE_TYPE = 'user-friday-night-schedule';
 class GetScheduleMessageParser extends CompetitionMessageParser {
     constructor(event){
         super(event);
-        console.error(LAST_SAVED_SCHEDULE_TYPE);
-        console.error(SUGGESTED_SCHEDULE_TYPE);
         this.scheduleType = event.lastSaved ? LAST_SAVED_SCHEDULE_TYPE : SUGGESTED_SCHEDULE_TYPE;
         this.orderedShowcaseBands = event.orderedShowcaseBands ? event.orderedShowcaseBands.split(',') : [];
     }

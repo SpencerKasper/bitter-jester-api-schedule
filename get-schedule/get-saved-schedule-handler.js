@@ -15,16 +15,13 @@ class GetSavedScheduleHandler {
             formatCompletedApplications.format,
             this.s3Client
         );
-        console.error('Got submissions.');
         const schedule = await this.s3Client
             .getObject('bitter-jester-test', `${this.competition}/user-friday-night-schedule.json`);
-        console.error('Got saved schedule.');
         const updatedNights = [];
         for(let night of schedule.nights){
             const updatedBandsForNight = night.bands.map(band => submissions.completedApplications.find(sub => sub.bandName === band.bandName));
             updatedNights.push({...night, bands: updatedBandsForNight});
         }
-        console.error('Grabbed new information.');
         return {...schedule, nights: updatedNights};
     }
 }
