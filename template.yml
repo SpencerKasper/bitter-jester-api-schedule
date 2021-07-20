@@ -46,7 +46,7 @@ Resources:
   GetRemovedBands:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: GetSchedule
+      FunctionName: GetRemovedBands
       Code: ./
       Handler: "get-removed-bands/getRemovedBandsLambdaHandler.handler"
       Runtime: "nodejs12.x"
