@@ -5,31 +5,6 @@ Parameters:
     Default: Missing Jotform Key
 
 Resources:
-  LambdaBasicAccessRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          -
-            Effect: "Allow"
-            Principal:
-              Service:
-                - "lambda.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
-      Policies:
-        -
-          PolicyName: "LambdaBasicAccessRolePolicy"
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-            - Effect: Allow
-              Action:
-              - logs:CreateLogGroup
-              - logs:CreateLogStream
-              - logs:PutLogEvents
-              Resource: "*"
   GetSchedule:
     Type: AWS::Lambda::Function
     Properties:
@@ -37,7 +12,7 @@ Resources:
       Code: ./
       Handler: "get-schedule/getScheduleLambdaHandler.handler"
       Runtime: "nodejs12.x"
-      Role: !GetAtt LambdaBasicAccessRole.Arn
+      Role: !GetAtt lambda-with-s3-access-role.Arn
       Timeout: 60
       Environment:
         Variables:
@@ -50,7 +25,7 @@ Resources:
       Code: ./
       Handler: "get-removed-bands/getRemovedBandsLambdaHandler.handler"
       Runtime: "nodejs12.x"
-      Role: !GetAtt LambdaBasicAccessRole.Arn
+      Role: !GetAtt lambda-with-s3-access-role.Arn
       Timeout: 60
       Environment:
         Variables:
@@ -63,7 +38,7 @@ Resources:
       Code: ./
       Handler: "update-removed-bands/updateRemovedBandsLambdaHandler.handler"
       Runtime: "nodejs12.x"
-      Role: !GetAtt LambdaBasicAccessRole.Arn
+      Role: !GetAtt lambda-with-s3-access-role.Arn
       Timeout: 60
       Environment:
         Variables:
