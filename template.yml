@@ -3,6 +3,9 @@ Parameters:
   JotformApiKey:
     Type: String
     Default: Missing Jotform Key
+  LambdaWithS3AccessRoleArn:
+    Type: String
+    Default: arn:aws:iam::771384749710:role/lambda-with-s3-access-role
 
 Resources:
   GetSchedule:
@@ -12,7 +15,8 @@ Resources:
       Code: ./
       Handler: "get-schedule/getScheduleLambdaHandler.handler"
       Runtime: "nodejs12.x"
-      Role: !GetAtt lambda-with-s3-access-role.Arn
+      Role:
+        Ref: LambdaWithS3AccessRoleArn
       Timeout: 60
       Environment:
         Variables:
@@ -25,7 +29,8 @@ Resources:
       Code: ./
       Handler: "get-removed-bands/getRemovedBandsLambdaHandler.handler"
       Runtime: "nodejs12.x"
-      Role: !GetAtt lambda-with-s3-access-role.Arn
+      Role:
+        Ref: LambdaWithS3AccessRoleArn
       Timeout: 60
       Environment:
         Variables:
@@ -38,7 +43,8 @@ Resources:
       Code: ./
       Handler: "update-removed-bands/updateRemovedBandsLambdaHandler.handler"
       Runtime: "nodejs12.x"
-      Role: !GetAtt lambda-with-s3-access-role.Arn
+      Role:
+        Ref: LambdaWithS3AccessRoleArn
       Timeout: 60
       Environment:
         Variables:
