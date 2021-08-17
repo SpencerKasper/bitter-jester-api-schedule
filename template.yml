@@ -102,7 +102,7 @@ Resources:
       Description: Prod API Stage
       RestApiId: !Ref BitterJesterApiSchedule
       StageName: prod
-  ApiGatewayIamRole:
+  ApiGatewayIamRole2:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -133,7 +133,7 @@ Resources:
             Action: 'lambda:*'
             Resource: !GetAtt UpdateRemovedBands.Arn
       Roles:
-        - !Ref ApiGatewayIamRole
+        - !Ref ApiGatewayIamRole2
   LambdaApiGatewayInvoke:
     Type: "AWS::Lambda::Permission"
     Properties:
@@ -165,7 +165,7 @@ Resources:
         method.request.path.competitionId: true
         method.request.querystring.lastSaved: false
       Integration:
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
+        Credentials: !GetAtt ApiGatewayIamRole2.Arn
         IntegrationHttpMethod: POST
         IntegrationResponses:
           - ResponseTemplates: { "application/json": "" }
@@ -234,7 +234,7 @@ Resources:
       RequestParameters:
         method.request.path.competitionId: true
       Integration:
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
+        Credentials: !GetAtt ApiGatewayIamRole2.Arn
         IntegrationHttpMethod: POST
         IntegrationResponses:
           - ResponseTemplates: { "application/json": "" }
@@ -304,7 +304,7 @@ Resources:
         method.request.header.body: true
         method.request.path.competitionId: true
       Integration:
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
+        Credentials: !GetAtt ApiGatewayIamRole2.Arn
         IntegrationHttpMethod: POST
         IntegrationResponses:
           - ResponseTemplates: { "application/json": "" }

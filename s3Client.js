@@ -53,8 +53,8 @@ class S3Client {
             Key: `competitions/${filename}`,
             Body: contents,
             ContentType: contentType,
-            ACL: 'public-read',
-            CacheControl: 'max-age=60'
+            CacheControl: 'max-age=60',
+            ServerSideEncryption: 'AES256'
         };
     }
 
