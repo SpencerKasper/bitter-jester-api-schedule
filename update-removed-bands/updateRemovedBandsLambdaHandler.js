@@ -12,7 +12,7 @@ exports.handler = async (event, context) => {
     const s3Client = new S3Client();
     if(request.removedBands){
         await s3Client.put(s3Client.createPutPublicJsonRequest(
-            'bitter-jester-test',
+            'bitter-jester-lake',
             `${competition}/removed-bands.json`,
             JSON.stringify({removedBands: request.removedBands})
         ));

@@ -1,4 +1,4 @@
-const S3_BUCKET = 'bitter-jester-test';
+const S3_BUCKET = 'bitter-jester-lake';
 const generateFridayNightBattleSchedule = require("./generateFridayNightBattleSchedule/generateFridayNightBattleSchedule");
 
 class GetSuggestedScheduleHandler {

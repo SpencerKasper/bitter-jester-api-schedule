@@ -27,7 +27,7 @@ jobs:
       - run:
           name: Deploy to API and Lambdas
           command: |
-            sam package --template-file template.yml --output-template-file packaged.yaml --s3-bucket bitter-jester-test --s3-prefix cloudformation-templates/bitter-jester-api-schedule --force-upload
+            sam package --template-file template.yml --output-template-file packaged.yaml --s3-bucket bitter-jester-lake --s3-prefix cloudformation-templates/bitter-jester-api-schedule --force-upload
             sam deploy --template-file packaged.yaml --stack-name bitter-jester-api-schedule --capabilities CAPABILITY_IAM --parameter-overrides JotformApiKey=${JOTFORM_API_KEY}
 workflows:
   build-and-deploy:

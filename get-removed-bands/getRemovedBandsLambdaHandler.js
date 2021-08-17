@@ -4,7 +4,7 @@ exports.handler = async (event, context) => {
     try {
         const competition = new CompetitionMessageParser(event).getCompetition();
         const s3Client = new S3Client();
-        const removedBands = await s3Client.getObject('bitter-jester-test', `${competition}/removed-bands.json`);
+        const removedBands = await s3Client.getObject('bitter-jester-lake', `${competition}/removed-bands.json`);
         return {statusCode: 200, body: removedBands};
     } catch (e) {
         return e;

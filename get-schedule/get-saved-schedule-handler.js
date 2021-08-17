@@ -16,7 +16,7 @@ class GetSavedScheduleHandler {
             this.s3Client
         );
         const schedule = await this.s3Client
-            .getObject('bitter-jester-test', `${this.competition}/user-friday-night-schedule.json`);
+            .getObject('bitter-jester-lake', `${this.competition}/user-friday-night-schedule.json`);
         const updatedNights = [];
         for(let night of schedule.nights){
             const updatedBandsForNight = night.bands.map(band => submissions.completedApplications.find(sub => sub.bandName === band.bandName));
