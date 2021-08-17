@@ -102,6 +102,20 @@ Resources:
       Description: Prod API Stage
       RestApiId: !Ref BitterJesterApiSchedule
       StageName: prod
+  ApiGatewayIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: 'Allow'
+            Principal:
+              Service:
+                - 'apigateway.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/'
   ApiGatewayPolicy:
     Type: AWS::IAM::Policy
     Properties:
