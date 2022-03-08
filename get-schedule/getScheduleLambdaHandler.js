@@ -1,10 +1,10 @@
 require('dotenv').config();
 
 const GetScheduleMessageParser = require("./get-schedule-message-parser").GetScheduleMessageParser;
-const GetSuggestedScheduleHandler = require("./get-suggested-schedule-handler").GetSuggestedScheduleHandler;
+const {GetSuggestedScheduleHandler} = require("./get-suggested-schedule-handler");
 const GetSavedScheduleHandler = require("./get-saved-schedule-handler").GetSavedScheduleHandler;
 
-const S3Client = require('s3Client').S3Client;
+const S3Client = require('../s3Client').S3Client;
 
 const s3Client = new S3Client();
 const SUGGESTED_SCHEDULE_TYPE = 'friday-night-schedule';

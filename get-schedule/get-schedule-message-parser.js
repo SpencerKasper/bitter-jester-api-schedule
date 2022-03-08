@@ -1,4 +1,4 @@
-const CompetitionMessageParser = require('shared-message-parsers/competition-message-parser').CompetitionMessageParser;
+const CompetitionMessageParser = require('../shared-message-parsers/competition-message-parser').CompetitionMessageParser;
 const SUGGESTED_SCHEDULE_TYPE = 'friday-night-schedule';
 const LAST_SAVED_SCHEDULE_TYPE = 'user-friday-night-schedule';
 

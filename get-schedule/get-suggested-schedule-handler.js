@@ -13,7 +13,8 @@ class GetSuggestedScheduleHandler {
         const response = await this.s3Client.getObject(S3_BUCKET, `${this.competition}/removed-bands.json`);
         const removedBands = response && response.removedBands ? response.removedBands : [];
         const applications = item.completedApplications.filter(app => !removedBands.includes(app.bandName));
-        const schedule = await generateFridayNightBattleSchedule.generateFridayNightBattleSchedule(applications, this.orderedShowcaseBands);
+        const competitionId = this.competition.split('=')[1];
+        const schedule = await generateFridayNightBattleSchedule.generateFridayNightBattleSchedule(applications, this.orderedShowcaseBands, competitionId);
         const s3PutRequest = this.s3Client.createPutPublicJsonRequest(
             S3_BUCKET,
             `${this.competition}/friday-night-schedule.json`,

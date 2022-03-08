@@ -5,6 +5,9 @@
     "main": "index.js",
     "author": "Spencer Kasper",
     "license": "ISC",
+    "scripts": {
+        "local": "node runLocal.js"
+    },
     "dependencies": {
         "@types/aws-sdk": "2.7.0",
         "@types/node": "13.7.4",
