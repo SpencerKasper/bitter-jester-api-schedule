@@ -40,7 +40,7 @@ function generateFridayNightBattleSchedule(completedApplications, orderedShowcas
         const deepCopyBands = _.cloneDeep(night.bands);
         console.error(`Starting pass for night ${night.night}`);
         console.error(`StartingBandsOnNight: ${night.bands.length}`);
-        if(night.bands.length <= MAX_NUMBER_OF_BANDS_PER_NIGHT){
+        if (night.bands.length <= MAX_NUMBER_OF_BANDS_PER_NIGHT) {
             console.error(`${night.night} is not over scheduled so continuing.`);
             continue;
         }
@@ -48,7 +48,7 @@ function generateFridayNightBattleSchedule(completedApplications, orderedShowcas
         for (let band of deepCopyBands) {
             console.error(`BandName: ${band.bandName}`);
             console.error(`PreviouslyScheduledNight: ${night.night}`);
-            if(orderedShowcaseBands.includes(band.bandName)){
+            if (orderedShowcaseBands.includes(band.bandName)) {
                 continue;
             }
             if (band.secondChoiceFridayNight !== '' && band.secondChoiceFridayNight !== undefined && band.firstChoiceFridayNight !== band.secondChoiceFridayNight) {
@@ -62,7 +62,7 @@ function generateFridayNightBattleSchedule(completedApplications, orderedShowcas
                     nights[secondChoiceFridayNightNumber - 1].bands.push(bandToAdd[0]);
                 }
             }
-            if(night.bands.length === MAX_NUMBER_OF_BANDS_PER_NIGHT){
+            if (night.bands.length === MAX_NUMBER_OF_BANDS_PER_NIGHT) {
                 console.error('Second choice night is full');
                 break;
             }
@@ -80,6 +80,26 @@ function generateFridayNightBattleSchedule(completedApplications, orderedShowcas
     //         }
     //     }
     // }
+
+    // Pass 2 - Add any bands that haven't been added yet
+    for (const app of completedApplications) {
+        let hasBandBeenScheduled = false;
+        for (const night of nights) {
+            if (night.bands.filter(band => band.bandName === app.bandName).length > 0) {
+                hasBandBeenScheduled = true;
+                break;
+            }
+        }
+        if (hasBandBeenScheduled) {
+            break;
+        }
+        for (const night of nights) {
+            if (night.bands.length <= MAX_NUMBER_OF_BANDS_PER_NIGHT && app.unavailableFridayNights.filter(unavailNight => unavailNight.includes(` ${NIGHT_MAP[night.night]},`)).length === 0 && !hasBandBeenScheduled) {
+                nights[night.night - 1].bands.push(app);
+                break;
+            }
+        }
+    }
 
     const schedule = {
         fridayNightOne: nights[0],
