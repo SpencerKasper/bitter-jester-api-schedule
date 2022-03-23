@@ -74,23 +74,11 @@ function generateFridayNightBattleSchedule(completedApplications, orderedShowcas
         }
     }
 
-    // // Pass 2 - Ensure no bands are on an unavailable night
-    // for(let night of nights) {
-    //     const deepCopyBands = _.cloneDeep(night.bands);
-    //     let bandIndex = 0;
-    //     for(let band of deepCopyBands){
-    //         const dateOfFridayNight = NIGHT_MAP[night.night];
-    //         if(band.unavailableFridayNights.includes(dateOfFridayNight)) {
-    //             const bandToMove = night.bands.splice(bandIndex, 1);
-    //         }
-    //     }
-    // }
-    console.error(completedApplications);
-    // Pass 2 - Add any bands that haven't been added yet
+    // Pass 2 - Add any bands that haven't been added yet and aren't available every friday
     for (const app of completedApplications) {
         let hasBandBeenScheduled = false;
         for (const night of nights) {
-            if (night.bands.filter(band => band.bandName === app.bandName).length > 0) {
+            if (app.isBandAvailableOnAllFridays || night.bands.filter(band => band.bandName === app.bandName).length > 0) {
                 hasBandBeenScheduled = true;
                 break;
             }
