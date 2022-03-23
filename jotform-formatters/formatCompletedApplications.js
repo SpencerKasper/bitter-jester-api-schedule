@@ -29,8 +29,10 @@ const format = (applications, jotformId) => {
             app.isBandAvailableOnAllFridays = convertIsBandAvailableOnFridays(bandAvailableOnAllFridays);
         }
 
-        if(!firstChoiceFridayNight){
+        if(!firstChoiceFridayNight && app.isBandAvailableOnAllFridays){
             app.firstChoiceFridayNight = 'Available Every Friday'
+        } else {
+            app.firstChoiceFridayNight = 'No Preference Aside From Unavailable'
         }
 
         if(!secondChoiceFridayNight){
