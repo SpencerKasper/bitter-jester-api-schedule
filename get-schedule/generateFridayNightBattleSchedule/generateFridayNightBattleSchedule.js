@@ -4,6 +4,7 @@ const {getNightMap} = require("../get-night-map");
 const MAX_NUMBER_OF_BANDS_PER_NIGHT = 7;
 
 function generateFridayNightBattleSchedule(completedApplications, orderedShowcaseBands, competitionId) {
+    console.error(completedApplications);
     const appsWithoutShowcase = completedApplications.filter(app => !orderedShowcaseBands.includes(app.bandName));
     const getAvailableBandsForNight = (fridayNightChoice) => {
         return appsWithoutShowcase
@@ -84,7 +85,7 @@ function generateFridayNightBattleSchedule(completedApplications, orderedShowcas
     //         }
     //     }
     // }
-
+    console.error(completedApplications);
     // Pass 2 - Add any bands that haven't been added yet
     for (const app of completedApplications) {
         let hasBandBeenScheduled = false;
@@ -95,10 +96,12 @@ function generateFridayNightBattleSchedule(completedApplications, orderedShowcas
             }
         }
         if (hasBandBeenScheduled) {
-            break;
+            continue;
         }
         for (const night of nights) {
-            if (night.bands.length <= MAX_NUMBER_OF_BANDS_PER_NIGHT && app.unavailableFridayNights.filter(unavailNight => unavailNight.includes(` ${NIGHT_MAP[night.night]},`)).length === 0 && !hasBandBeenScheduled) {
+            const nightIsNotFull = night.bands.length <= MAX_NUMBER_OF_BANDS_PER_NIGHT;
+            const bandIsAvailable = !app.unavailableFridayNights || app.unavailableFridayNights.filter(unavailNight => unavailNight.includes(` ${NIGHT_MAP[night.night]},`)).length === 0;
+            if (nightIsNotFull && bandIsAvailable && !hasBandBeenScheduled) {
                 nights[night.night - 1].bands.push(app);
                 break;
             }
