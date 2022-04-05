@@ -31,7 +31,7 @@ const format = (applications, jotformId) => {
 
         if(!firstChoiceFridayNight && app.isBandAvailableOnAllFridays){
             app.firstChoiceFridayNight = 'Available Every Friday'
-        } else {
+        } else if(!firstChoiceFridayNight) {
             app.firstChoiceFridayNight = 'No Preference Aside From Unavailable'
         }
 

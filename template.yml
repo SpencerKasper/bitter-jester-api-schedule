@@ -22,6 +22,16 @@ Resources:
         Variables:
           JOTFORM_API_KEY:
             Ref: JotformApiKey
+  SaveSchedule:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: SaveSchedule
+      Code: ./
+      Handler: "save-schedule/saveScheduleLambdaHandler.handler"
+      Runtime: "nodejs12.x"
+      Role:
+        Ref: LambdaWithS3AccessRoleArn
+      Timeout: 60
   GetRemovedBands:
     Type: AWS::Lambda::Function
     Properties:
@@ -68,6 +78,13 @@ Resources:
       ParentId:
         Ref: CompetitionIdPathResource
       PathPart: 'get-schedule'
+      RestApiId: !Ref BitterJesterApiSchedule
+  ScheduleResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: CompetitionIdPathResource
+      PathPart: 'schedule'
       RestApiId: !Ref BitterJesterApiSchedule
   GetRemovedBandsResource:
     Type: AWS::ApiGateway::Resource
@@ -128,6 +145,9 @@ Resources:
             Resource: !GetAtt GetSchedule.Arn
           - Effect: 'Allow'
             Action: 'lambda:*'
+            Resource: !GetAtt SaveSchedule.Arn
+          - Effect: 'Allow'
+            Action: 'lambda:*'
             Resource: !GetAtt GetRemovedBands.Arn
           - Effect: 'Allow'
             Action: 'lambda:*'
@@ -139,6 +159,13 @@ Resources:
     Properties:
       Action: "lambda:InvokeFunction"
       FunctionName: !GetAtt "GetSchedule.Arn"
+      Principal: "apigateway.amazonaws.com"
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BitterJesterApiSchedule}/*/*
+  LambdaApiGatewayInvokeSaveSchedule:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt "SaveSchedule.Arn"
       Principal: "apigateway.amazonaws.com"
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${BitterJesterApiSchedule}/*/*
   LambdaApiGatewayInvokeGetRemovedBands:
@@ -349,6 +376,74 @@ Resources:
             ResponseParameters:
               method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
               method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: ''
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: false
+  SaveScheduleGatewayMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: POST
+      RequestParameters:
+        method.request.header.body: true
+      Integration:
+        Credentials: !GetAtt ApiGatewayIamRole.Arn
+        IntegrationHttpMethod: POST
+        IntegrationResponses:
+          - ResponseTemplates: { "application/json": "" }
+            ResponseParameters:
+              method.response.header.X-Requested-With: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'"
+              method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            StatusCode: 200
+        PassthroughBehavior: WHEN_NO_TEMPLATES
+        RequestTemplates:
+          application/json: "{ \"body\": $input.json('$')}"
+        TimeoutInMillis: 29000
+        Type: AWS
+        Uri: !Sub
+          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
+          - lambdaArn: !GetAtt "SaveSchedule.Arn"
+      MethodResponses:
+        - ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.X-Requested-With: false
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: '*'
+          StatusCode: 200
+      OperationName: 'Save Schedule'
+      ResourceId: !Ref ScheduleResource
+      RestApiId: !Ref BitterJesterApiSchedule
+  SaveScheduleOptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      RestApiId:
+        Ref: BitterJesterApiSchedule
+      ResourceId:
+        Ref: ScheduleResource
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,OPTIONS'"
               method.response.header.Access-Control-Allow-Origin: "'*'"
             ResponseTemplates:
               application/json: ''

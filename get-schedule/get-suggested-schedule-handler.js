@@ -14,13 +14,13 @@ class GetSuggestedScheduleHandler {
 
     async get() {
         const jotformId = COMPETITION_ID_JOTFORM_ID_MAP[this.competition.split('=')[1]];
-        console.error(`JOTFORMID = ${jotformId.completedApps}`);
         const submissions = await writeToS3FromJotForm.getFormSubmissions(
             jotformId.completedApps,
             `${this.competition}/completed-submissions.json`,
             formatCompletedApplications.format,
             this.s3Client
         );
+        console.error(JSON.stringify(submissions));
         const response = await this.s3Client.getObject(S3_BUCKET, `${this.competition}/removed-bands.json`);
         const removedBands = response && response.removedBands ? response.removedBands : [];
         const applications = submissions.completedApplications.filter(app => !removedBands.includes(app.bandName));
