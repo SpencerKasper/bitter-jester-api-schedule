@@ -1,6 +1,6 @@
 const formatCompletedApplications = require("../jotform-formatters/formatCompletedApplications");
 const writeToS3FromJotForm =  require("../writeToS3FromJotForm/writeToS3FromJotForm");
-const BITTER_JESTER_COMPLETED_APPLICATIONS_JOTFORM_FORM_ID = 211443460736149;
+const {COMPETITION_ID_JOTFORM_ID_MAP} = require("./competitionIdJotformIdMap");
 
 class GetSavedScheduleHandler {
     constructor(s3Client, competition){
@@ -9,8 +9,9 @@ class GetSavedScheduleHandler {
     }
 
     async get() {
+        const jotformId = COMPETITION_ID_JOTFORM_ID_MAP[this.competition.split('=')[1]];
         const submissions = await writeToS3FromJotForm.getFormSubmissions(
-            BITTER_JESTER_COMPLETED_APPLICATIONS_JOTFORM_FORM_ID,
+            jotformId.completedApps,
             `${this.competition}/completed-submissions.json`,
             formatCompletedApplications.format,
             this.s3Client
