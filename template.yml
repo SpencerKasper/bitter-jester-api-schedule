@@ -399,7 +399,7 @@ Resources:
       RequestParameters:
         method.request.header.body: true
       Integration:
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
+        Credentials: !GetAtt ApiGatewayIamRole2.Arn
         IntegrationHttpMethod: POST
         IntegrationResponses:
           - ResponseTemplates: { "application/json": "" }
