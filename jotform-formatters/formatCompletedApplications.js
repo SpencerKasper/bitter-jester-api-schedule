@@ -23,7 +23,7 @@ const format = (applications, jotformId) => {
         const bandAvailableOnAllFridays = app.isBandAvailableOnAllFridays;
         const firstChoiceFridayNight = app.firstChoiceFridayNight;
         const secondChoiceFridayNight = app.secondChoiceFridayNight;
-        app.primaryPhoneNumber = app.primaryPhoneNumber.full;
+        app.primaryPhoneNumber = app.primaryPhoneNumber ? app.primaryPhoneNumber.full : '';
 
         if(bandAvailableOnAllFridays){
             app.isBandAvailableOnAllFridays = convertIsBandAvailableOnFridays(bandAvailableOnAllFridays);
