@@ -7,7 +7,9 @@ const s3Client = new S3Client();
 exports.handler = async function (event, context) {
     try {
         const competition = new CompetitionMessageParser(event).getCompetition();
+        console.error(`Saving to competition: ${competition}`);
         const schedule = event.body;
+        console.error()
         await s3Client.put(
             s3Client.createPutPublicJsonRequest(
                 'bitter-jester-lake',
