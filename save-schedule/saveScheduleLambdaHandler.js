@@ -6,7 +6,7 @@ const s3Client = new S3Client();
 
 exports.handler = async function (event, context) {
     try {
-        const competition = new CompetitionMessageParser().getCompetition();
+        const competition = new CompetitionMessageParser(event).getCompetition();
         const schedule = event.body;
         await s3Client.put(
             s3Client.createPutPublicJsonRequest(
