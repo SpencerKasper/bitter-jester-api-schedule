@@ -1,4 +1,4 @@
-const {handler} = require('./get-schedule/getScheduleLambdaHandler');
+const {handler} = require('./get-judges-schedule/getJudgesScheduleLambdaHandler');
 
 const run = async () => {
     const response = await handler({competitionId: 'bitter_jester_summer_2022'});
