@@ -20,7 +20,6 @@ class GetSuggestedScheduleHandler {
             formatCompletedApplications.format,
             this.s3Client
         );
-        console.error(JSON.stringify(submissions));
         const response = await this.s3Client.getObject(S3_BUCKET, `${this.competition}/removed-bands.json`);
         const removedBands = response && response.removedBands ? response.removedBands : [];
         const applications = submissions.completedApplications.filter(app => !removedBands.includes(app.bandName));

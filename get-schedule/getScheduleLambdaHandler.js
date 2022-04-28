@@ -17,7 +17,7 @@ exports.handler = async function (event, context) {
         if(scheduleType === SUGGESTED_SCHEDULE_TYPE){
             const getSuggestedScheduleHandler = new GetSuggestedScheduleHandler(s3Client, competition, orderedShowcaseBands);
             const suggestedSchedule = await getSuggestedScheduleHandler.get();
-            console.error(`Output: ${JSON.stringify(suggestedSchedule)}`);
+            console.error(suggestedSchedule);
             return {responseCode: 200, body: suggestedSchedule};
         }
         const getSavedScheduleHandler = new GetSavedScheduleHandler(s3Client, competition);

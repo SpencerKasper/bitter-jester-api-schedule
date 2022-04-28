@@ -1,26 +1,21 @@
 const _ = require('lodash');
 const {getNightMap} = require("../get-night-map");
 
-const MAX_NUMBER_OF_BANDS_PER_NIGHT = 7;
+const MAX_NUMBER_OF_BANDS_PER_NIGHT = 9;
 
 function generateFridayNightBattleSchedule(completedApplications, orderedShowcaseBands, competitionId) {
-    console.error(completedApplications);
-    const appsWithoutShowcase = completedApplications.filter(app => !orderedShowcaseBands.includes(app.bandName));
     const getAvailableBandsForNight = (fridayNightChoice) => {
-        return appsWithoutShowcase
+        return completedApplications
             .filter(app => {
                 return app.firstChoiceFridayNight.includes(` ${fridayNightChoice},`);
             });
     };
-
-    const getShowcaseBand = (index) => completedApplications.find(app => app.bandName === orderedShowcaseBands[index]);
-
-    const fullyAvailableBands = appsWithoutShowcase.filter(app => app.isBandAvailableOnAllFridays);
+    const fullyAvailableBands = completedApplications.filter(app => app.isBandAvailableOnAllFridays);
     const NIGHT_MAP = getNightMap(competitionId);
-    const firstChoiceNightOne = orderedShowcaseBands.length === 4 ? [getShowcaseBand(0), ...getAvailableBandsForNight(NIGHT_MAP['1'])] : getAvailableBandsForNight(NIGHT_MAP['1']);
-    const firstChoiceNightTwo = orderedShowcaseBands.length === 4 ? [getShowcaseBand(1), ...getAvailableBandsForNight(NIGHT_MAP['2'])] : getAvailableBandsForNight(NIGHT_MAP['2']);
-    const firstChoiceNightThree = orderedShowcaseBands.length === 4 ? [getShowcaseBand(2), ...getAvailableBandsForNight(NIGHT_MAP['3'])] : getAvailableBandsForNight(NIGHT_MAP['3']);
-    const firstChoiceNightFour = orderedShowcaseBands.length === 4 ? [getShowcaseBand(3), ...getAvailableBandsForNight(NIGHT_MAP['4'])] : getAvailableBandsForNight(NIGHT_MAP['4']);
+    const firstChoiceNightOne =  getAvailableBandsForNight(NIGHT_MAP['1']);
+    const firstChoiceNightTwo =  getAvailableBandsForNight(NIGHT_MAP['2']);
+    const firstChoiceNightThree =  getAvailableBandsForNight(NIGHT_MAP['3']);
+    const firstChoiceNightFour =  getAvailableBandsForNight(NIGHT_MAP['4']);
     const nights = [
         {
             bands: firstChoiceNightOne,
