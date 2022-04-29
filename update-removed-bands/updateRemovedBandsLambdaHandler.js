@@ -31,7 +31,7 @@ exports.handler = async (event, context) => {
                 bands: bandsForNightWithSomeRemoved,
             }
         });
-        updatedNights[0] = {...updatedNights[0], bands: updatedNights[0].bands.unshift(appsToAddBack)};
+        updatedNights[0].bands.unshift(appsToAddBack)
         await s3Client.put(
             s3Client.createPutPublicJsonRequest(
                 'bitter-jester-lake',
