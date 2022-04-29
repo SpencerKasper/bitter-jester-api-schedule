@@ -25,6 +25,10 @@ class GetSuggestedScheduleHandler {
         const applications = submissions.completedApplications.filter(app => !removedBands.includes(app.bandName));
         const competitionId = this.competition.split('=')[1];
         const schedule = await generateFridayNightBattleSchedule.generateFridayNightBattleSchedule(applications, this.orderedShowcaseBands, competitionId);
+        console.error(`Night 1: ${schedule.fridayNightOne.bands.length}`);
+        console.error(`Night 2: ${schedule.fridayNightTwo.bands.length}`);
+        console.error(`Night 3: ${schedule.fridayNightThree.bands.length}`);
+        console.error(`Night 4: ${schedule.fridayNightFour.bands.length}`);
         const s3PutRequest = this.s3Client.createPutPublicJsonRequest(
             S3_BUCKET,
             `${this.competition}/friday-night-schedule.json`,

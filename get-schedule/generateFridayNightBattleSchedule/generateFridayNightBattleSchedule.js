@@ -11,6 +11,7 @@ function generateFridayNightBattleSchedule(completedApplications, orderedShowcas
             });
     };
     const fullyAvailableBands = completedApplications.filter(app => app.isBandAvailableOnAllFridays);
+    console.error(fullyAvailableBands);
     const NIGHT_MAP = getNightMap(competitionId);
     const firstChoiceNightOne =  getAvailableBandsForNight(NIGHT_MAP['1']);
     const firstChoiceNightTwo =  getAvailableBandsForNight(NIGHT_MAP['2']);

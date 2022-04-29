@@ -14,28 +14,23 @@ const jotformAnswerMap = {
 
 const format = (applications, jotformId) => {
 
-    const convertIsBandAvailableOnFridays = (isBandAvailableStringField) => {
-        return !isBandAvailableStringField.toLowerCase().includes('not available');
+    const convertIsBandAvailableOnFridays = (app) => {
+        return !app.unavailableFridayNights || !app.unavailableFridayNights.length;
     };
 
     const extractedApplications = extractAnswersFromJotform.extractAnswersFromJotform(applications, jotformAnswerMap);
     const cleanedApplications = extractedApplications.map(app => {
-        const bandAvailableOnAllFridays = app.isBandAvailableOnAllFridays;
         const firstChoiceFridayNight = app.firstChoiceFridayNight;
         const secondChoiceFridayNight = app.secondChoiceFridayNight;
         app.primaryPhoneNumber = app.primaryPhoneNumber ? app.primaryPhoneNumber.full : '';
-
-        if(bandAvailableOnAllFridays){
-            app.isBandAvailableOnAllFridays = convertIsBandAvailableOnFridays(bandAvailableOnAllFridays);
-        }
-
-        if(!firstChoiceFridayNight && app.isBandAvailableOnAllFridays){
+        app.isBandAvailableOnAllFridays = convertIsBandAvailableOnFridays(app);
+        if (!firstChoiceFridayNight && app.isBandAvailableOnAllFridays) {
             app.firstChoiceFridayNight = 'Available Every Friday'
-        } else if(!firstChoiceFridayNight) {
+        } else if (!firstChoiceFridayNight) {
             app.firstChoiceFridayNight = 'No Preference Aside From Unavailable'
         }
 
-        if(!secondChoiceFridayNight){
+        if (!secondChoiceFridayNight) {
             app.secondChoiceFridayNight = ''
         }
         return app;
