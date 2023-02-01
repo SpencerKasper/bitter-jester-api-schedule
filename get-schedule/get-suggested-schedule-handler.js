@@ -4,6 +4,7 @@ const S3_BUCKET = 'bitter-jester-lake';
 const generateFridayNightBattleSchedule = require("./generateFridayNightBattleSchedule/generateFridayNightBattleSchedule");
 const writeToS3FromJotForm = require("../writeToS3FromJotForm/writeToS3FromJotForm");
 const {COMPETITION_ID_JOTFORM_ID_MAP} = require("./competitionIdJotformIdMap");
+const {COMPETITION_ID_ANSWER_MAP_MAP} = require('./competitionIdAnswerMapMap');
 
 class GetSuggestedScheduleHandler {
     constructor(s3Client, competition, orderedShowcaseBands) {
@@ -17,10 +18,10 @@ class GetSuggestedScheduleHandler {
         const submissions = await writeToS3FromJotForm.getFormSubmissions(
             jotformId.completedApps,
             `${this.competition}/completed-submissions.json`,
-            formatCompletedApplications.format,
+            (applications, jotformId) => formatCompletedApplications.format(applications, jotformId, COMPETITION_ID_ANSWER_MAP_MAP),
             this.s3Client
         );
-        const response = await this.s3Client.getObject(S3_BUCKET, `${this.competition}/removed-bands.json`);
+        const response = await this.s3Client.getObject(S3_BUCKET, `${this.competition}/removed-bands.json`, {removedBands: []});
         const removedBands = response && response.removedBands ? response.removedBands : [];
         const applications = submissions.completedApplications.filter(app => !removedBands.includes(app.bandName));
         const competitionId = this.competition.split('=')[1];

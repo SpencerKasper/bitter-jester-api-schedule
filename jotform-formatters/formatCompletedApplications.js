@@ -12,13 +12,13 @@ const jotformAnswerMap = {
     referencedBands: '303'
 };
 
-const format = (applications, jotformId) => {
+const format = (applications, jotformId, answerMap = jotformAnswerMap) => {
 
     const convertIsBandAvailableOnFridays = (app) => {
         return !app.unavailableFridayNights || !app.unavailableFridayNights.length;
     };
 
-    const extractedApplications = extractAnswersFromJotform.extractAnswersFromJotform(applications, jotformAnswerMap);
+    const extractedApplications = extractAnswersFromJotform.extractAnswersFromJotform(applications, answerMap);
     const cleanedApplications = extractedApplications.map(app => {
         const firstChoiceFridayNight = app.firstChoiceFridayNight;
         const secondChoiceFridayNight = app.secondChoiceFridayNight;

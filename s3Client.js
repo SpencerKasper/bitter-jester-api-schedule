@@ -25,20 +25,24 @@ class S3Client {
         })
     }
 
-    async getObject(bucket = "bitter-jester-lake", key, isRoot = false) {
+    async getObject(bucket = "bitter-jester-lake", key, isRoot = false, defaultReturnOnFail = {}) {
         const params = {
             Bucket: bucket,
             Key: isRoot ? key : `competitions/${key}`
         };
         return new Promise((resolve, reject) => {
-            this.client.getObject(params, function (err, data) {
-                if (err) console.log(err, err.stack);
-                else {
-                    const jsonStringReturn = data.Body.toString();
+            try {
+                this.client.getObject(params, function (err, data) {
+                    if (err) console.log(err, err.stack);
+                    else {
+                        const jsonStringReturn = data.Body.toString();
 
-                    return resolve(JSON.parse(jsonStringReturn));
-                }
-            });
+                        return resolve(JSON.parse(jsonStringReturn));
+                    }
+                });
+            } catch (e) {
+                return resolve(defaultReturnOnFail);
+            }
         });
     }
 
