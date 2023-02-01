@@ -14,17 +14,20 @@ class GetSuggestedScheduleHandler {
     }
 
     async get() {
-        const jotformId = COMPETITION_ID_JOTFORM_ID_MAP[this.competition.split('=')[1]];
+        const competitionId = this.competition.split('=')[1];
+        const jotformId = COMPETITION_ID_JOTFORM_ID_MAP[competitionId];
+        const answerMap = COMPETITION_ID_ANSWER_MAP_MAP.hasOwnProperty(competitionId) ?
+            COMPETITION_ID_ANSWER_MAP_MAP[competitionId] :
+            null;
         const submissions = await writeToS3FromJotForm.getFormSubmissions(
             jotformId.completedApps,
             `${this.competition}/completed-submissions.json`,
-            (applications, jotformId) => formatCompletedApplications.format(applications, jotformId, COMPETITION_ID_ANSWER_MAP_MAP),
+            (applications, jotformId) => formatCompletedApplications.format(applications, jotformId, answerMap),
             this.s3Client
         );
         const response = await this.s3Client.getObject(S3_BUCKET, `${this.competition}/removed-bands.json`);
         const removedBands = response && response.removedBands ? response.removedBands : [];
         const applications = submissions.completedApplications.filter(app => !removedBands.includes(app.bandName));
-        const competitionId = this.competition.split('=')[1];
         const schedule = await generateFridayNightBattleSchedule.generateFridayNightBattleSchedule(applications, this.orderedShowcaseBands, competitionId);
         console.error(`Night 1: ${schedule.fridayNightOne.bands.length}`);
         console.error(`Night 2: ${schedule.fridayNightTwo.bands.length}`);
