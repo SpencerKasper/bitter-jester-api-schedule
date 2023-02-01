@@ -30,6 +30,7 @@ class S3Client {
             Bucket: bucket,
             Key: isRoot ? key : `competitions/${key}`
         };
+        console.error(key);
         return new Promise((resolve, reject) => {
             try {
                 this.client.getObject(params, function (err, data) {

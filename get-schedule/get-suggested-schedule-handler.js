@@ -21,7 +21,7 @@ class GetSuggestedScheduleHandler {
             (applications, jotformId) => formatCompletedApplications.format(applications, jotformId, COMPETITION_ID_ANSWER_MAP_MAP),
             this.s3Client
         );
-        const response = await this.s3Client.getObject(S3_BUCKET, `${this.competition}/removed-bands.json`, {removedBands: []});
+        const response = await this.s3Client.getObject(S3_BUCKET, `${this.competition}/removed-bands.json`);
         const removedBands = response && response.removedBands ? response.removedBands : [];
         const applications = submissions.completedApplications.filter(app => !removedBands.includes(app.bandName));
         const competitionId = this.competition.split('=')[1];
