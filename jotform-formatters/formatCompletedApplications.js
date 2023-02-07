@@ -31,7 +31,7 @@ const format = (applications, jotformId, answerMap = jotformAnswerMap) => {
         }
 
         if (!secondChoiceFridayNight) {
-            app.secondChoiceFridayNight = ''
+            app.secondChoiceFridayNight = '';
         }
         return app;
     });

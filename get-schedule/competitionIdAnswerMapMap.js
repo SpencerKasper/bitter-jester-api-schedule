@@ -1,8 +1,8 @@
 const JOTFORM_ANSWER_MAP_2023 = {
     bandName: '39',
     primaryEmailAddress: '289',
-    firstChoiceFridayNight: '77',
-    secondChoiceFridayNight: '78',
+    firstChoiceFridayNight: '552',
+    secondChoiceFridayNight: '553',
     isBandAvailableOnAllFridays: '232',
     primaryPhoneNumber: '312',
     citiesRepresented: '315',
