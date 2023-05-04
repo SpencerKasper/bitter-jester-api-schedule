@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const {getNightMap} = require("../get-night-map");
 
-const MAX_NUMBER_OF_BANDS_PER_NIGHT = 9;
+const MAX_NUMBER_OF_BANDS_PER_NIGHT = 10;
 
 function generateFridayNightBattleSchedule(completedApplications, orderedShowcaseBands, competitionId) {
     const getAvailableBandsForNight = (fridayNightChoice) => {
