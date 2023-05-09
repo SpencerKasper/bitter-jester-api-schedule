@@ -3,6 +3,10 @@ const {getNightMap} = require("../get-night-map");
 
 const MAX_NUMBER_OF_BANDS_PER_NIGHT = 10;
 
+const mapToLowerCaseAndTrim = (values) => {
+    return values.map(x => x.trim().toLowerCase());
+}
+
 function generateFridayNightBattleSchedule(completedApplications, orderedShowcaseBands, competitionId) {
     const getAvailableBandsForNight = (fridayNightChoice) => {
         return completedApplications

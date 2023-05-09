@@ -343,7 +343,7 @@ Resources:
             StatusCode: 200
         PassthroughBehavior: WHEN_NO_TEMPLATES
         RequestTemplates:
-          application/json: "{ \"competitionId\": \"$input.params('competitionId')\", \"body\": \"$util.escapeJavaScript($input.json('$'))\"}"
+          application/json: "{ \"competitionId\": \"$input.params('competitionId')\", \"body\": $input.json('$')}"
         TimeoutInMillis: 29000
         Type: AWS
         Uri: !Sub

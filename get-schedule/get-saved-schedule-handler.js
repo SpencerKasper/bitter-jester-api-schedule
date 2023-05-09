@@ -1,9 +1,9 @@
 const formatCompletedApplications = require("../jotform-formatters/formatCompletedApplications");
-const writeToS3FromJotForm =  require("../writeToS3FromJotForm/writeToS3FromJotForm");
+const writeToS3FromJotForm = require("../writeToS3FromJotForm/writeToS3FromJotForm");
 const {COMPETITION_ID_JOTFORM_ID_MAP} = require("./competitionIdJotformIdMap");
 
 class GetSavedScheduleHandler {
-    constructor(s3Client, competition){
+    constructor(s3Client, competition) {
         this.s3Client = s3Client;
         this.competition = competition;
     }
@@ -19,11 +19,20 @@ class GetSavedScheduleHandler {
         const schedule = await this.s3Client
             .getObject('bitter-jester-lake', `${this.competition}/user-friday-night-schedule.json`);
         const updatedNights = [];
-        for(let night of schedule.nights){
-            const updatedBandsForNight = night.bands.map(band => submissions.completedApplications.find(sub => sub.bandName === band.bandName));
+        for (let night of schedule.nights) {
+            const updatedBandsForNight = night.bands.map(band => {
+                if (band.bandName.toLowerCase().includes('green')) {
+                    console.error(JSON.stringify(band));
+                }
+                return submissions.completedApplications.find(sub => this.trimAndLowercase(sub.bandName) === this.trimAndLowercase(band.bandName));
+            });
             updatedNights.push({...night, bands: updatedBandsForNight});
         }
         return {...schedule, nights: updatedNights};
+    }
+
+    trimAndLowercase(value) {
+        return value.trim().toLowerCase();
     }
 }
 

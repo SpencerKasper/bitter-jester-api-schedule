@@ -6,6 +6,10 @@ const writeToS3FromJotForm = require("../writeToS3FromJotForm/writeToS3FromJotFo
 const {COMPETITION_ID_JOTFORM_ID_MAP} = require("./competitionIdJotformIdMap");
 const {COMPETITION_ID_ANSWER_MAP_MAP} = require('./competitionIdAnswerMapMap');
 
+const mapToLowerCaseAndTrim = (values) => {
+    return values.map(x => x.trim().toLowerCase());
+}
+
 class GetSuggestedScheduleHandler {
     constructor(s3Client, competition, orderedShowcaseBands) {
         this.s3Client = s3Client;
@@ -26,8 +30,8 @@ class GetSuggestedScheduleHandler {
             this.s3Client
         );
         const response = await this.s3Client.getObject(S3_BUCKET, `${this.competition}/removed-bands.json`);
-        const removedBands = response && response.removedBands ? response.removedBands : [];
-        const applications = submissions.completedApplications.filter(app => !removedBands.includes(app.bandName));
+        const removedBands = response && response.removedBands ? mapToLowerCaseAndTrim(response.removedBands) : [];
+        const applications = submissions.completedApplications.filter(app => !mapToLowerCaseAndTrim(removedBands).includes(app.bandName.trim().toLowerCase()));
         const schedule = await generateFridayNightBattleSchedule.generateFridayNightBattleSchedule(applications, this.orderedShowcaseBands, competitionId);
         console.error(`Night 1: ${schedule.fridayNightOne.bands.length}`);
         console.error(`Night 2: ${schedule.fridayNightTwo.bands.length}`);
